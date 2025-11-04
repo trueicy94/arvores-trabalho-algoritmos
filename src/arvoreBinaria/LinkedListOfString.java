@@ -4,20 +4,20 @@ package arvoreBinaria;
  * Classe de lista encadeada de numeros inteiros.
  */
 
-public class LinkedListOfInteger {
+public class LinkedListOfString {
 
     // Classe interna Node
     private class Node {
 
-        public Integer element;
+        public String element;
         public Node next;
 
-        public Node(Integer element) {
+        public Node(String element) {
             this.element = element;
             next = null;
         }
         
-        public Node(Integer element, Node next) {
+        public Node(String element, Node next) {
             this.element = element;
             this.next = next;
         }        
@@ -33,7 +33,7 @@ public class LinkedListOfInteger {
     /**
      * Construtor da lista
      */
-    public LinkedListOfInteger() {
+    public LinkedListOfString() {
         head = null;
         tail = null;
         count = 0;
@@ -44,7 +44,7 @@ public class LinkedListOfInteger {
      *
      * @param element elemento a ser adicionado ao final da lista
      */
-    public void add(Integer element) {
+    public void add(String element) {
         Node aux = new Node(element);
         if (head == null) {
             head = aux;
@@ -62,7 +62,7 @@ public class LinkedListOfInteger {
      * @param element elemento a ser inserido
      * @throws IndexOutOfBoundsException se (index < 0 || index > size())
      */
-    public void add(int index, Integer element) {
+    public void add(int index, String element) {
         if (index < 0 || index > size()) {
             throw new IndexOutOfBoundsException();
         }
@@ -95,7 +95,7 @@ public class LinkedListOfInteger {
      * @return o elemento da posicao especificada
      * @throws IndexOutOfBoundsException se (index < 0 || index >= size())
      */
-    public Integer get(int index) {
+    public String get(int index) {
         if ((index < 0) || (index >= count)) {
             throw new IndexOutOfBoundsException();
         }
@@ -117,7 +117,7 @@ public class LinkedListOfInteger {
      * @return o elemento armazenado anteriormente na posicao da lista
      * @throws IndexOutOfBoundsException se (index < 0 || index >= size())
      */
-    public Integer set(int index, Integer element) {
+    public String set(int index, String element) {
         if ((index < 0) || (index >= count)) {
             throw new IndexOutOfBoundsException();
         }
@@ -125,7 +125,7 @@ public class LinkedListOfInteger {
         for (int i = 0; i < index; i++) {
             aux = aux.next;
         }
-        Integer tmp = aux.element;
+        String tmp = aux.element;
         aux.element = element;
         return tmp;
 
@@ -209,7 +209,7 @@ public class LinkedListOfInteger {
      * @return o elemento que foi removido da lista
      * @throws IndexOutOfBoundsException se (index < 0 || index >= size())
      */
-    public Integer removeByIndex(int index) {
+    public String removeByIndex(int index) {
         if (index < 0 || index >= count) {
             throw new IndexOutOfBoundsException();
         }
@@ -229,7 +229,7 @@ public class LinkedListOfInteger {
             aux = aux.next;
             c++;
         }
-        Integer element = aux.next.element;
+        String element = aux.next.element;
         if (tail == aux.next) {
             tail = aux;
         }
@@ -324,7 +324,7 @@ public class LinkedListOfInteger {
      * @param element elemento a ser inserido
      * @param index posicao para insercao
      */
-    public void insert(Integer element, int index) {
+    public void insert(String element, int index) {
         if (index<0 || index>count)
             throw new IndexOutOfBoundsException();
         if (count>0 && index == count)
@@ -336,25 +336,27 @@ public class LinkedListOfInteger {
         count++;
     }
 
-    private Node insert(Integer element, int pos, Node f ) {
+    private Node insert(String element, int pos, Node f ) {
         if (pos == 0 || f == null) {
             return new Node(element, f);
         }
         f.next = insert(element, pos - 1, f.next);
         return f;
     }
-    
-    public void addInOrder(Integer element) {
+
+    public void addInOrder(String element) {
         Node aux = head;
-        int i=0;
+        int i = 0;
+
         while (aux != null) {
-            if (aux.element > element) {
-                this.add(i,element);
+            if (aux.element.compareTo(element) > 0) {
+                this.add(i, element);
                 return;
             }
             aux = aux.next;
             i++;
         }
+
         this.add(element);
     }
     
@@ -374,5 +376,6 @@ public class LinkedListOfInteger {
             System.out.println(n.element);
         }
     }
+
             
 }

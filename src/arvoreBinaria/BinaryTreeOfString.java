@@ -1,23 +1,28 @@
 package arvoreBinaria;
 
+import java.util.List;
+
 /**
  * Classe de arvore binaria de numeros inteiros.
  */
 
-public class BinaryTreeOfInteger {
+public class BinaryTreeOfString {
 
     private static final class Node {
 
         public Node father;
         public Node left;
         public Node right;
-        private Integer element;
+        private String element;
 
-        public Node(Integer element) {
+        public Node(String element) {
             father = null;
             left = null;
             right = null;
             this.element = element;
+        }
+        public boolean isLeaf() {
+            return left == null && right == null;
         }
     }
 
@@ -26,7 +31,7 @@ public class BinaryTreeOfInteger {
     private Node root; //referência para o nodo raiz
 
     // Metodos
-    public BinaryTreeOfInteger() {
+    public BinaryTreeOfString() {
         count = 0;
         root = null;
     }
@@ -63,7 +68,7 @@ public class BinaryTreeOfInteger {
      * @throws EmptyTreeException se arvore vazia.
      * @return elemento da raiz.
      */
-    public Integer getRoot() {
+    public String getRoot() {
         if (isEmpty()) {
             throw new EmptyTreeException();
         }
@@ -72,7 +77,7 @@ public class BinaryTreeOfInteger {
     // Metodo privado que procura por element a partir de target
     // e retorna a referencia para o nodo no qual element esta
     // armazenado. Retorna null se nao encontrar element.
-    private Node searchNodeRef(Integer element, Node target) {
+    private Node searchNodeRef(String element, Node target) {
         if ( target == null)
             return null;
         // Visita a "raiz"
@@ -95,7 +100,7 @@ public class BinaryTreeOfInteger {
      * @param element
      * @return true se element estiver na arvore, false caso contrario.
      */
-    public boolean contains(Integer element) {
+    public boolean contains(String element) {
         Node nAux = searchNodeRef(element, root);
         return (nAux != null);
     }
@@ -106,7 +111,7 @@ public class BinaryTreeOfInteger {
      * @param element
      * @return pai de element
      */
-    public Integer getParent(Integer element) {
+    public String getParent(String element) {
         Node n = this.searchNodeRef(element, root);
         if (n == null) {
             return null;
@@ -122,7 +127,7 @@ public class BinaryTreeOfInteger {
      *
      * @param element a ser colocado na raiz da arvore.
      */
-    public void setRoot(Integer element) {
+    public void setRoot(String element) {
         if (root != null){
             root.element = element;
         }
@@ -134,7 +139,7 @@ public class BinaryTreeOfInteger {
      * @return true se for feita a insercao, e false caso a arvore nao estiver
      * vazia e a insercao não for feita.
      */
-    public boolean addRoot(Integer element) {
+    public boolean addRoot(String element) {
         if (root != null) // se a arvore nao estiver vazia
             return false;
         root = new Node(element);
@@ -151,7 +156,7 @@ public class BinaryTreeOfInteger {
      * @param elemFather pai do elemento a ser inserido
      * @return true se foi feita a inserção, e false caso contrario.
      */
-    public boolean addLeft(Integer element, Integer elemFather) {
+    public boolean addLeft(String element, String elemFather) {
         // Primeiro procura por elemFather
         Node aux = searchNodeRef(elemFather,root);
 
@@ -179,7 +184,7 @@ public class BinaryTreeOfInteger {
      * @param elemFather pai do elemento a ser inserido
      * @return true se foi feita a inserção, e false caso contrario.
      */
-    public boolean addRight(Integer element, Integer elemFather) {
+    public boolean addRight(String element, String elemFather) {
         // Primeiro procura por elemFather
         Node aux = searchNodeRef(elemFather,root);
 
@@ -212,13 +217,13 @@ public class BinaryTreeOfInteger {
      *
      * @return lista com todos os elementos da arvore.
      */
-    public LinkedListOfInteger positionsPre() {
-        LinkedListOfInteger lista = new LinkedListOfInteger();
+    public LinkedListOfString positionsPre() {
+        LinkedListOfString lista = new LinkedListOfString();
         positionsPreAux(root, lista);
         return lista;
     }
 
-    private void positionsPreAux(Node n, LinkedListOfInteger lista) {
+    private void positionsPreAux(Node n, LinkedListOfString lista) {
         if (n != null) {
             lista.add(n.element); // visita raiz
             positionsPreAux(n.left,lista); // percorre subarvore da esq
@@ -226,5 +231,128 @@ public class BinaryTreeOfInteger {
         }
     }
 
+    public LinkedListOfString positionsPost() {
+        LinkedListOfString lista = new LinkedListOfString();
+        positionsPostAux(root, lista);
+        return lista;
+    }
+
+    private void positionsPostAux(Node n, LinkedListOfString lista) {
+        if (n != null) {
+            positionsPostAux(n.left, lista);
+            positionsPostAux(n.right, lista);
+            lista.add(n.element);
+        }
+    }
+
+    private Node addLeft(Node father, String element) {
+        if (father.left != null) return null;
+        Node n = new Node(element);
+        n.father = father;
+        father.left = n;
+        count++;
+        return n;
+    }
+
+    private Node addRight(Node father, String element) {
+        if (father.right != null) return null;
+        Node n = new Node(element);
+        n.father = father;
+        father.right = n;
+        count++;
+        return n;
+    }
+
+
+    // -------------------------CONSTRUÇÃO DO TORNEIO----------------------
+
+    public void buildTournament(String[] players) {
+        if (players.length < 8 || players.length > 32 || (players.length & (players.length - 1)) != 0) {
+            throw new IllegalArgumentException("Número de jogadores deve ser 8, 16 ou 32.");
+        }
+
+        clear();
+        addRoot(null); // raiz vazia
+        buildTournamentAux(root, players, 0, players.length - 1);
+    }
+
+    private void buildTournamentAux(Node node, String[] players, int start, int end) {
+        if (start == end) {
+            node.element = players[start]; // folha recebe jogador
+        } else {
+            int mid = (start + end) / 2;
+
+            Node left = addLeft(node, null);
+            buildTournamentAux(left, players, start, mid);
+
+            Node right = addRight(node, null);
+            buildTournamentAux(right, players, mid + 1, end);
+        }
+    }
+
+
+
+    // ---------------- REGISTRAR VENCEDOR ----------------
+    public void registerMatchWinner(String winner, String loser) {
+        Node lca = lcaOfPlayers(winner, loser);
+        if (lca != null) {
+            lca.element = winner;
+        }
+    }
+
+    // ---------------- CAMINHO ATÉ A FINAL ----------------
+    public LinkedListOfString pathToFinal(String player) {
+        LinkedListOfString path = new LinkedListOfString();
+        Node leaf = searchNodeRef(player, root);
+        if (leaf == null) {
+            path.add("Jogador não encontrado.");
+            return path;
+        }
+
+        Node cur = leaf.father;
+        while (cur != null) {
+            path.add("Partida: " + cur.element);
+            if (cur.element != null && !cur.element.equals(player)) {
+                path.add("Eliminado aqui.");
+                break;
+            }
+            cur = cur.father;
+        }
+        return path;
+    }
+
+    // ---------------- LCA (primeira partida possível) ----------------
+    public String lcaMatchLabel(String p1, String p2) {
+        Node lca = lcaOfPlayers(p1, p2);
+        if (lca == null) return null;
+        return "Partida entre " + p1 + " e " + p2;
+    }
+
+    private Node lcaOfPlayers(String p1, String p2) {
+        Node a = searchNodeRef(p1, root);
+        Node b = searchNodeRef(p2, root);
+        if (a == null || b == null) return null;
+
+        int da = depth(a);
+        int db = depth(b);
+
+        while (da > db) { a = a.father; da--; }
+        while (db > da) { b = b.father; db--; }
+
+        while (a != b) {
+            a = a.father;
+            b = b.father;
+        }
+        return a;
+    }
+
+    private int depth(Node n) {
+        int d = 0;
+        while (n != null) {
+            d++;
+            n = n.father;
+        }
+        return d;
+    }
 
 }

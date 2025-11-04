@@ -2,16 +2,16 @@ package arvoreGenerica;
 
 import java.util.LinkedList;
 
-public class GeneralTreeOfInteger {
+public class GeneralTreeOfString {
 
     // Classe interna Node
     private class Node {
         // Atributos da classe N ode
         public Node father;
-        public Integer element;
+        public String element;
         public LinkedList<Node> subtrees;
         // Métodos da classe Node
-        public Node(Integer element) {
+        public Node(String element) {
             father = null;
             this.element = element;
             subtrees = new LinkedList<>();
@@ -47,7 +47,7 @@ public class GeneralTreeOfInteger {
     /**
      * Metodo construtor.
      */
-    public GeneralTreeOfInteger() {
+    public GeneralTreeOfString() {
         root = null;
         count = 0;
     }
@@ -64,7 +64,7 @@ public class GeneralTreeOfInteger {
     // caminhamento pre-fixado. Retorna a referencia
     // para o nodo no qual "elem" esta armazenado.
     // Se não encontrar "elem", ele retorna NULL.
-    private Node searchNodeRef(Integer elem, Node n) {
+    private Node searchNodeRef(String elem, Node n) {
         if (n == null)
             return null;
 
@@ -90,7 +90,7 @@ public class GeneralTreeOfInteger {
      * @return true se encontrou elemFather e adicionou elem na arvore,
      * false caso contrario.
      */
-    public boolean add(Integer elem, Integer elemFather) {
+    public boolean add(String elem, String elemFather) {
         // Primeiro cria o nodo
         Node n = new Node(elem);
 
@@ -122,7 +122,7 @@ public class GeneralTreeOfInteger {
      * @param elem a ser procurado.
      * @return true se achar elem, e false caso contrario.
      */
-    public boolean contains (Integer elem) {
+    public boolean contains (String elem) {
             // Procura por "elem" a partir da raiz
             Node aux = searchNodeRef(elem, root);
             return (aux != null); // Retorna true se aux não for nulo, caso contrário, retorna false.
@@ -135,8 +135,8 @@ public class GeneralTreeOfInteger {
      * caminhamento em largura.
      * @return lista com os elementos da arvore na ordem do caminhamento em largura
      */
-    public LinkedList<Integer> positionsWidth() {
-        LinkedList<Integer> lista = new LinkedList<>();
+    public LinkedList<String> positionsWidth() {
+        LinkedList<String> lista = new LinkedList<>();
         if (root != null) {
             Queue<Node> fila = new Queue<>();
             // Primeiro coloca a raiz na fila
@@ -162,12 +162,12 @@ public class GeneralTreeOfInteger {
      * caminhamento pre-fixado.
      * @return lista com os elementos da arvore na ordem do caminhamento pre-fixado
      */
-    public LinkedList<Integer> positionsPre() {
-        LinkedList<Integer> lista = new LinkedList<>();
+    public LinkedList<String> positionsPre() {
+        LinkedList<String> lista = new LinkedList<>();
         positionsPreAux(root,lista);
         return lista;
     }
-    private void positionsPreAux(Node n, LinkedList<Integer> lista) {
+    private void positionsPreAux(Node n, LinkedList<String> lista) {
         if (n != null) {
             //Visita a raiz
             lista.add(n.element);
@@ -184,13 +184,13 @@ public class GeneralTreeOfInteger {
      * caminhamento pos-fixado.
      * @return lista com os elementos da arvore na ordem do caminhamento pos-fixado
      */
-    public LinkedList<Integer> positionsPos() {
-        LinkedList<Integer> lista = new LinkedList<>();
+    public LinkedList<String> positionsPos() {
+        LinkedList<String> lista = new LinkedList<>();
         positionsPosAux(root, lista);
         return lista;
     }
 
-    private void positionsPosAux(Node n, LinkedList<Integer> lista) {
+    private void positionsPosAux(Node n, LinkedList<String> lista) {
         if( n != null ) {
             // Visita os filhos
             for (int i=0; i<n.getSubtreesSize(); i++) {
@@ -208,10 +208,15 @@ public class GeneralTreeOfInteger {
      * @return nivel no qual element esta, ou -1 se
      * nao encontrou element.
      */
-    public int level(Integer element) {
-        // IMPLEMENTE ESTE METODO !!
-        return 0;
-
+    public int level(String element) {
+        Node n = searchNodeRef(element, root);
+        if (n == null) return -1;
+        int level = 0;
+        while (n != root) {
+            n = n.father;
+            level++;
+        }
+        return level;
     }
 
 
@@ -223,19 +228,42 @@ public class GeneralTreeOfInteger {
      * @return true se achou element e removeu o galho, false
      * caso contrario.
      */
-    public boolean removeBranch(Integer element) {
+    public boolean removeBranch(String element) {
+        // procura o nodo
+        Node n = searchNodeRef(element, root);
+        if (n == null) return false;
 
-        // IMPLEMENTE ESTE METODO !!
-        return false;
+        // se n é raiz: remove tudo
+        if (n == root) {
+            int removed = countNodes(root);
+            root = null;
+            count = 0;
+            return true;
+        }
 
+        // remove do pai
+        Node parent = n.father;
+        if (parent == null) return false; // não deveria acontecer, já checamos raiz
+
+        // remove a referência no pai
+        boolean removedOk = parent.removeSubtree(n);
+        if (!removedOk) return false;
+
+        // atualiza count diminuindo o número de nós da subárvore removida
+        int removedCount = countNodes(n);
+        count -= removedCount;
+        n.father = null; // safety
+        return true;
     }
 
     // Conta o numero de nodos da subarvore suja raiz eh passada por parametro
     private int countNodes(Node n) {
-
-        // IMPLEMENTE ESTE METODO !!
-        return 0;
-
+        if (n == null) return 0;
+        int total = 1;
+        for (int i = 0; i < n.getSubtreesSize(); i++) {
+            total += countNodes(n.getSubtree(i));
+        }
+        return total;
     }
 
 
@@ -246,7 +274,7 @@ public class GeneralTreeOfInteger {
     {
         System.out.println("node [shape = circle];\n");
 
-        LinkedList<Integer> L = new LinkedList<>();
+        LinkedList<String> L = new LinkedList<>();
         //L = positionsWidth();
         L = positionsPre();
 
