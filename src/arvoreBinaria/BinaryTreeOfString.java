@@ -245,6 +245,28 @@ public class BinaryTreeOfString {
         }
     }
 
+    public LinkedListOfString positionsLevel() {
+        LinkedListOfString lista = new LinkedListOfString();
+        if (root == null) return lista;
+
+        // Fila manual (array simples)
+        Node[] fila = new Node[count]; // count é o total de nós
+        int front = 0;
+        int rear = 0;
+
+        fila[rear++] = root;
+
+        while (front < rear) {
+            Node n = fila[front++];
+            lista.add(n.element);
+
+            if (n.left != null) fila[rear++] = n.left;
+            if (n.right != null) fila[rear++] = n.right;
+        }
+
+        return lista;
+    }
+
     private Node addLeft(Node father, String element) {
         if (father.left != null) return null;
         Node n = new Node(element);
@@ -263,6 +285,33 @@ public class BinaryTreeOfString {
         return n;
     }
 
+    public int height() {
+        return height(root);
+    }
+
+    private int height(Node n) {
+        if (n == null) return -1;
+        return 1 + Math.max(height(n.left), height(n.right));
+    }
+
+    public int countLeaves() {
+        return countLeaves(root);
+    }
+
+    private int countLeaves(Node n) {
+        if (n == null) return 0;
+        if (n.isLeaf()) return 1;
+        return countLeaves(n.left) + countLeaves(n.right);
+    }
+
+    public int countInternalNodes() {
+        return countInternalNodes(root);
+    }
+
+    private int countInternalNodes(Node n) {
+        if (n == null || n.isLeaf()) return 0;
+        return 1 + countInternalNodes(n.left) + countInternalNodes(n.right);
+    }
 
     // -------------------------CONSTRUÇÃO DO TORNEIO----------------------
 
@@ -291,7 +340,6 @@ public class BinaryTreeOfString {
     }
 
 
-
     // ---------------- REGISTRAR VENCEDOR ----------------
     public void registerMatchWinner(String winner, String loser) {
         Node lca = lcaOfPlayers(winner, loser);
@@ -304,6 +352,7 @@ public class BinaryTreeOfString {
     public LinkedListOfString pathToFinal(String player) {
         LinkedListOfString path = new LinkedListOfString();
         Node leaf = searchNodeRef(player, root);
+
         if (leaf == null) {
             path.add("Jogador não encontrado.");
             return path;
@@ -311,15 +360,24 @@ public class BinaryTreeOfString {
 
         Node cur = leaf.father;
         while (cur != null) {
-            path.add("Partida: " + cur.element);
+            if (cur.element == null) {
+                path.add("Partida ainda não decidida");
+            } else {
+                path.add("Partida vencida por: " + cur.element);
+            }
+
+            // Se o jogador foi eliminado
             if (cur.element != null && !cur.element.equals(player)) {
                 path.add("Eliminado aqui.");
                 break;
             }
+
             cur = cur.father;
         }
+
         return path;
     }
+
 
     // ---------------- LCA (primeira partida possível) ----------------
     public String lcaMatchLabel(String p1, String p2) {

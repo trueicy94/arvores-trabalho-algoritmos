@@ -4,42 +4,39 @@ import arvoreBinaria.BinaryTreeOfString;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-
-        // Lista de jogadores (8 nomes)
-        String[] players = {
-                "Ana", "Bruno", "Carla", "Diego",
-                "Eva", "Felipe", "Gabi", "Hugo"
-        };
-
-        // Cria a árvore do torneio
+        String[] players = {"Ana", "Bruno", "Carlos", "Diana", "Eduardo", "Fernanda", "Gustavo", "Helena"};
         BinaryTreeOfString torneio = new BinaryTreeOfString();
         torneio.buildTournament(players);
 
-        // Registrar vencedores das quartas
-        torneio.registerMatchWinner("Ana", "Bruno");
-        torneio.registerMatchWinner("Carla", "Diego");
-        torneio.registerMatchWinner("Eva", "Felipe");
-        torneio.registerMatchWinner("Gabi", "Hugo");
+        System.out.println("Pré-ordem:");
+        System.out.println(torneio.positionsPre());
 
-        // Registrar vencedores das semifinais
-        torneio.registerMatchWinner("Ana", "Carla");
-        torneio.registerMatchWinner("Gabi", "Eva");
+        System.out.println("Pós-ordem:");
+        System.out.println(torneio.positionsPost());
 
-        // Registrar vencedor da final
-        torneio.registerMatchWinner("Ana", "Gabi");
+        System.out.println("Em largura:");
+        System.out.println(torneio.positionsLevel());
 
-        // Campeão
-        System.out.println("\nCampeão do torneio: " + torneio.getRoot());
+        System.out.println("Partida entre Ana e Bruno:");
+        System.out.println(torneio.lcaMatchLabel("Ana", "Bruno"));
 
-        // Caminho até a final
-        System.out.println("\nCaminho da Ana até a final:");
+        System.out.println("Caminho até a final (Ana):");
         System.out.println(torneio.pathToFinal("Ana"));
 
-        System.out.println("\nCaminho do Bruno até a final:");
-        System.out.println(torneio.pathToFinal("Bruno"));
+        torneio.registerMatchWinner("Ana", "Bruno");
+        torneio.registerMatchWinner("Carlos", "Diana");
+        torneio.registerMatchWinner("Eduardo", "Fernanda");
+        torneio.registerMatchWinner("Gustavo", "Helena");
 
-        // Primeira partida possível entre dois jogadores
-        System.out.println("\nPrimeira partida possível entre Ana e Gabi:");
-        System.out.println(torneio.lcaMatchLabel("Ana", "Gabi"));
+        System.out.println("Após registrar vencedores da primeira rodada:");
+        System.out.println(torneio.positionsLevel());
+
+        torneio.registerMatchWinner("Ana", "Carlos");
+        torneio.registerMatchWinner("Eduardo", "Gustavo");
+        torneio.registerMatchWinner("Ana", "Eduardo"); // Final
+
+        System.out.println("Campeão do torneio:");
+        System.out.println(torneio.getRoot());
+
     }
 }

@@ -278,17 +278,19 @@ public class LinkedListOfString {
 
     @Override
     public String toString() {
-        StringBuilder s = new StringBuilder();
-
+        StringBuilder sb = new StringBuilder("[");
         Node aux = head;
-
         while (aux != null) {
-            s.append(aux.element.toString());
-            s.append("\n");
+            if (aux.element != null) {
+                sb.append(aux.element);
+            } else {
+                sb.append("null"); // mostra "null" no lugar de vazio
+            }
+            if (aux.next != null) sb.append(", ");
             aux = aux.next;
         }
-
-        return s.toString();
+        sb.append("]");
+        return sb.toString();
     }
 
     /////////////////////////////////
